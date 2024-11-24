@@ -243,8 +243,8 @@ void listSPIFFS(void) {
 
 void wifiConnect(){
   isWIFIConnected = false;
-  char* ssid = "Why-Fly";
-  char* password = "Homeisthebest!";
+  char* ssid = "SSID";
+  char* password = "PASSWORD";
 
   WiFi.begin(ssid, password);
   while(WiFi.status() != WL_CONNECTED){
