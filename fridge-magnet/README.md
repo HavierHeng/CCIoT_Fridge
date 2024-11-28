@@ -75,3 +75,11 @@ ESP-MQTT: [ESP-MQTT](https://docs.espressif.com/projects/esp-idf/en/v5.3.1/esp32
 
 
 
+# Other notes
+
+## Certificates
+AmazonRootCA1.pem -> root_cert_auth.crt
+xxx-certificate.pem -> client.crt
+xxx-private.pem.key -> client.key
+
+

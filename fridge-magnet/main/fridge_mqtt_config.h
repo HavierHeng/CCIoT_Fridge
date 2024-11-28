@@ -11,8 +11,8 @@
 #endif
 
 // Username value for auth client to MQTT broker when username/password based client auth is used. For this project, will be using client cert/private key though.
-#ifndef CLIENT_IDENTIFER
-    #define CLIENT_IDENTIFER CONFIG_MQTT_CLIENT_IDENTIFIER
+#ifndef CLIENT_IDENTIFIER
+    #define CLIENT_IDENTIFIER CONFIG_MQTT_CLIENT_IDENTIFIER
 #endif
 
 #define NETWORK_BUFFER_SIZE       ( CONFIG_MQTT_NETWORK_BUFFER_SIZE )

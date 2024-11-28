@@ -89,6 +89,11 @@ extern const char root_cert_auth_end[] asm("_binary_root_cert_auth_crt_end");
     #error "Please define a topic to get detected user text from."
 #endif
 
+// Helper macro to stringify non-string values (for example, MQTT_BROKER_PORT)
+#define STRINGIFY(x) #x
+
+// Create the MQTT broker address macro
+#define MQTT_BROKER_ADDRESS ("mqtts://" STRINGIFY(MQTT_IOT_ENDPOINT) ":" STRINGIFY(MQTT_BROKER_PORT))
 
 static const char *TAG = "MQTT_EXAMPLE";
 
@@ -163,10 +168,10 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_
     }
 }
 
-static void mqtt_app_start(void)
+void mqtt_app_start(void)
 {
   const esp_mqtt_client_config_t mqtt_cfg = {
-    .broker.address.uri = "mqtts://" + MQTT_IOT_ENDPOINT + MQTT_BROKER_PORT,
+    .broker.address.uri = MQTT_BROKER_ADDRESS,
     .broker.verification.certificate = (const char *)root_cert_auth_start,
     .credentials = {
       .authentication = {
