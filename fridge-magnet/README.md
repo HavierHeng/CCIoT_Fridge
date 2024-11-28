@@ -8,10 +8,10 @@ The fridge magnet also subscribes to a MQTT channel for URL for MP3 of Text to S
 ## GPIO Button
 
 |  GPIO | Purpose |
-| --- | ---|
-| 21  | Input|
+| --- | --- |
+| 21  | Input |
 
-Firmware: ![UncleRus/esp-idf-lib:Button](https://github.com/UncleRus/esp-idf-lib/tree/master/components/button)
+Firmware: [UncleRus/esp-idf-lib:Button](https://github.com/UncleRus/esp-idf-lib/tree/master/components/button)
 
 ## QSPI SD Card
 
@@ -22,7 +22,7 @@ Firmware: ![UncleRus/esp-idf-lib:Button](https://github.com/UncleRus/esp-idf-lib
 | 36  | CLK |
 | 39  | CS |
 
-Firmware: ![Joltwallet/littlefs](https://components.espressif.com/components/joltwallet/littlefs)
+Firmware: [Joltwallet/littlefs](https://components.espressif.com/components/joltwallet/littlefs)
 
 ## 16x2 LCD Screen
 
@@ -31,7 +31,7 @@ Firmware: ![Joltwallet/littlefs](https://components.espressif.com/components/jol
 | 48 | SDA|
 | 2  | SCL|
 
-Firmware: ![Bradkeifer/esp32-HD44780](https://github.com/bradkeifer/esp32-HD44780/tree/main)
+Firmware: [Bradkeifer/esp32-HD44780](https://github.com/bradkeifer/esp32-HD44780/tree/main)
 
 I2C Address: 0x27
 LCD Rows: 2
@@ -47,9 +47,7 @@ LCD Columns: 16
 | 17  | WS/Left Right CLK (LRC) |
 
 
-Firmware Reference: ![ThatProject/ESP32_MICROPHONE/Wiretap](https://github.com/0015/ThatProject/blob/master/ESP32_MICROPHONE/Wiretap_INMP441_MAX98357A_via_websocket/Server_MAX98357A_TTGO/Server_MAX98357A_TTGO.ino)
-
-For ESP-IDF v5: ![Espressif Docs](https://docs.espressif.com/projects/esp-idf/en/v5.3.1/esp32/api-reference/peripherals/i2s.html)
+Firmware library to play MP3/WAV from SD Card: [ESP32-audioI2S](https://github.com/schreibfaul1/ESP32-audioI2S/tree/master) 
 
 ## INMP441 Microphone
 |  GPIO | Purpose |
@@ -59,9 +57,9 @@ For ESP-IDF v5: ![Espressif Docs](https://docs.espressif.com/projects/esp-idf/en
 | 7  | Serial Clock (SCK) |
 
 
-Firmware Reference: ![ThatProject/ESP32_MICROPHONE/Speech_to_text](https://github.com/0015/ThatProject/blob/master/ESP32_MICROPHONE/ESP32_INMP441_SPEECH_TO_TEXT/ESP32_INMP441_RECORDING_UPLOAD_TO_SERVER/ESP32_INMP441_RECORDING_UPLOAD_TO_SERVER.ino)
+Firmware Reference: [ThatProject/ESP32_MICROPHONE/Speech_to_text](https://github.com/0015/ThatProject/blob/master/ESP32_MICROPHONE/ESP32_INMP441_SPEECH_TO_TEXT/ESP32_INMP441_RECORDING_UPLOAD_TO_SERVER/ESP32_INMP441_RECORDING_UPLOAD_TO_SERVER.ino)
 
-For ESP-IDF v5: ![Espressif Docs](https://docs.espressif.com/projects/esp-idf/en/v5.3.1/esp32/api-reference/peripherals/i2s.html)
+For ESP-IDF v5: [Espressif Docs for I2S](https://docs.espressif.com/projects/esp-idf/en/v5.3.1/esp32/api-reference/peripherals/i2s.html)
 
 ## Built in LED WS2812B
 
@@ -71,7 +69,9 @@ For ESP-IDF v5: ![Espressif Docs](https://docs.espressif.com/projects/esp-idf/en
 
 
 # Other Firmware
-ESP-MQTT: ![ESP-MQTT](https://docs.espressif.com/projects/esp-idf/en/v5.3.1/esp32/api-reference/protocols/mqtt.html)
+ESP-MQTT: [ESP-MQTT](https://docs.espressif.com/projects/esp-idf/en/v5.3.1/esp32/api-reference/protocols/mqtt.html)
+- ESP-IDF MQTT SSL Mutual Auth Example: https://github.com/espressif/esp-idf/tree/v5.2.3/examples/protocols/mqtt/ssl_mutual_auth
+- ESP-AWS-IOT MQTT TLS Mutal Auth Example: https://github.com/espressif/esp-aws-iot/tree/master/examples/mqtt/tls_mutual_auth
 
 
 
