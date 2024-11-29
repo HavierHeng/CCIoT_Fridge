@@ -1,6 +1,8 @@
 set(COMPONENT_SRCS
                     "fridge_magnet.c"
                     "mqtt/mqtt_auth.c"
+                    "sd_card/sd_card.c"
+                    "speaker/speaker.c"
 )
 
 set(COMPONENT_ADD_INCLUDEDIRS

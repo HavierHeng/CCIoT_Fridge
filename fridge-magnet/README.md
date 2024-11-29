@@ -21,6 +21,8 @@ Firmware: [UncleRus/esp-idf-lib:Button](https://github.com/UncleRus/esp-idf-lib/
 
 ## QSPI SD Card
 
+Run as 1-line mode. i.e with SCK, MOSI, MISO, CS
+
 |  GPIO | Purpose |
 | --- | ---|
 | 37  | MISO |
@@ -55,8 +57,9 @@ LCD Columns: 16
 | 16  | Serial Clock (BCLK) |
 | 17  | WS/Left Right CLK (LRC) |
 
+WAV files have to be strictly 16 bit depth, 44100Hz to be played. Otherwise, something might go wrong.
 
-Firmware library to play MP3/WAV from SD Card: [ESP32-audioI2S](https://github.com/schreibfaul1/ESP32-audioI2S/tree/master) 
+Firmware Reference: [Parabuzzle/esp-idf-simple-audio-player](https://github.com/parabuzzle/esp-idf-simple-audio-player/tree/main)
 
 ## INMP441 Microphone
 |  GPIO | Purpose |

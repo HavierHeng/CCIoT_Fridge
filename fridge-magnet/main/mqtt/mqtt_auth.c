@@ -65,7 +65,7 @@ extern const char root_cert_auth_end[] asm("_binary_root_cert_auth_crt_end");
 // Create the MQTT broker address macro
 #define MQTT_BROKER_ADDRESS ("mqtts://" STRINGIFY(MQTT_IOT_ENDPOINT) ":" STRINGIFY(MQTT_BROKER_PORT))
 
-static const char *TAG = "MQTT_EXAMPLE";
+static const char *TAG = "mqtt-fridge";
 
 static void log_error_if_nonzero(const char *message, int error_code)
 {
