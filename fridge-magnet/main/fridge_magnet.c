@@ -11,6 +11,7 @@
 #include "esp_log.h"    
 
 void mqtt_app_start(void);
+
 static const char *TAG = "MQTT_EXAMPLE";
 
 void app_main(void)

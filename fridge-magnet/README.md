@@ -3,6 +3,9 @@
 The fridge magnet is to take in recordings of the user voice on a button press, and then store it into SD Card. It will then send the file to a S3 Bucket. 
 The fridge magnet also subscribes to a MQTT channel for URL for MP3 of Text to Speech wav files.
 
+# Hardware
+Board used is an ESP32-S3. To flash it, plug into the port labelled COM or UART (not the USB port as that is for USB slave purposes).
+
 # Firmware and Pinouts
 
 ## GPIO Button
@@ -76,6 +79,17 @@ ESP-MQTT: [ESP-MQTT](https://docs.espressif.com/projects/esp-idf/en/v5.3.1/esp32
 
 
 # Other notes
+## Submodules
+
+To add a submodule component:
+`git submodule add <git repo>`
+
+To update submodules:
+`git submodule update --init --recursive --progress`
+
+## Setting details
+Run `idf.py menuconfig` - Fridge Configuration defines most of the pub/sub topics and other misc details.
+Remember to go to example_connections and change out the configurations as well for WiFi SSID and Password.
 
 ## Certificates
 AmazonRootCA1.pem -> root_cert_auth.crt

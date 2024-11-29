@@ -30,36 +30,15 @@
 #include "mqtt_client.h"
 #include "fridge_mqtt_config.h"
 
-// I don't have secure cert header so yeah...
-// #ifdef CONFIG_EXAMPLE_USE_ESP_SECURE_CERT_MGR
-//     #include "esp_secure_cert_read.h"    
-// #endif
 
 #ifndef CLIENT_IDENTIFIER
     #error "Please define a unique client identifier, CLIENT_IDENTIFIER, in menuconfig"
 #endif
 
-/* The AWS IoT message broker requires either a set of client certificate/private key
- * or username/password to authenticate the client. */
-#ifdef CLIENT_USERNAME
-/* If a username is defined, a client password also would need to be defined for
- * client authentication. */
-    #ifndef CLIENT_PASSWORD
-        #error "Please define client password(CLIENT_PASSWORD) in demo_config.h for client authentication based on username/password."
-    #endif
-/* AWS IoT MQTT broker port needs to be 443 for client authentication based on
- * username/password. */
-    #if AWS_MQTT_PORT != 443
-        #error "Broker port, AWS_MQTT_PORT, should be defined as 443 in demo_config.h for client authentication based on username/password."
-    #endif
-#else /* !CLIENT_USERNAME */
-    #ifndef CONFIG_EXAMPLE_USE_ESP_SECURE_CERT_MGR
-        extern const char client_cert_start[] asm("_binary_client_crt_start");
-        extern const char client_cert_end[] asm("_binary_client_crt_end");
-        extern const char client_key_start[] asm("_binary_client_key_start");
-        extern const char client_key_end[] asm("_binary_client_key_end");
-    #endif /* CONFIG_EXAMPLE_USE_ESP_SECURE_CERT_MGR */
-#endif /* CLIENT_USERNAME */
+extern const char client_cert_start[] asm("_binary_client_crt_start");
+extern const char client_cert_end[] asm("_binary_client_crt_end");
+extern const char client_key_start[] asm("_binary_client_key_start");
+extern const char client_key_end[] asm("_binary_client_key_end");
 extern const char root_cert_auth_start[] asm("_binary_root_cert_auth_crt_start");
 extern const char root_cert_auth_end[] asm("_binary_root_cert_auth_crt_end");
 
