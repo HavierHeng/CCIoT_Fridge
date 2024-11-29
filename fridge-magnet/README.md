@@ -3,8 +3,11 @@
 The fridge magnet is to take in recordings of the user voice on a button press, and then store it into SD Card. It will then send the file to a S3 Bucket. 
 The fridge magnet also subscribes to a MQTT channel for URL for MP3 of Text to Speech wav files.
 
-# Hardware
+# Setup 
 Board used is an ESP32-S3. To flash it, plug into the port labelled COM or UART (not the USB port as that is for USB slave purposes).
+Get ESP-IDF v5.2, and activate the IDF environment.
+
+Be careful to not plug the ESP32 in while the speaker amplifier is connected, just in case it draws current from your USB port.
 
 # Firmware and Pinouts
 
@@ -25,7 +28,10 @@ Firmware: [UncleRus/esp-idf-lib:Button](https://github.com/UncleRus/esp-idf-lib/
 | 36  | CLK |
 | 39  | CS |
 
-Firmware: [Joltwallet/littlefs](https://components.espressif.com/components/joltwallet/littlefs)
+Firmware: 
+- [FAT FS](https://docs.espressif.com/projects/esp-idf/en/stable/esp32/api-reference/storage/fatfs.html)
+- [SDMMC Driver](https://docs.espressif.com/projects/esp-idf/en/stable/esp32/api-reference/storage/sdmmc.html)
+
 
 ## 16x2 LCD Screen
 

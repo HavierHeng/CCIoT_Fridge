@@ -1,6 +1,6 @@
 set(COMPONENT_SRCS
                     "fridge_magnet.c"
-                    "mqtt_auth.c"
+                    "mqtt/mqtt_auth.c"
 )
 
 set(COMPONENT_ADD_INCLUDEDIRS
@@ -16,6 +16,9 @@ set(REQUIRE_COMPONENTS
 set(PRIV_REQUIRE_COMPONENTS
                     "nvs_flash"
                     "mqtt"
+                    "fatfs"
+                    "driver"
+                    "sdmmc"
 )
 
 idf_component_register(SRCS "${COMPONENT_SRCS}"

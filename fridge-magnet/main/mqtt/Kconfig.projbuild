@@ -1,4 +1,4 @@
-menu "Fridge Configuration"
+menu "Fridge MQTT Configuration"
 
     config MQTT_CLIENT_IDENTIFIER
         string "The MQTT client identifier used"

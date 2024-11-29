@@ -1,3 +1,6 @@
 [submodule "fridge-magnet/components/esp32-HD44780"]
 	path = fridge-magnet/components/esp32-HD44780
 	url = git@github.com:bradkeifer/esp32-HD44780.git
+[submodule "fridge-magnet/components/ESP32-audioI2S"]
+	path = fridge-magnet/components/ESP32-audioI2S
+	url = git@github.com:schreibfaul1/ESP32-audioI2S.git
