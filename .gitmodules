@@ -7,3 +7,6 @@
 [submodule "test-sd-audio-player/components/esp32-HD44780"]
 	path = test-sd-audio-player/components/esp32-HD44780
 	url = git@github.com:bradkeifer/esp32-HD44780.git
+[submodule "mic-test-standalone/components/esp32-HD44780"]
+	path = mic-test-standalone/components/esp32-HD44780
+	url = git@github.com:bradkeifer/esp32-HD44780.git

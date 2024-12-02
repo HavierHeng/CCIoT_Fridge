@@ -43,11 +43,6 @@ void app_main(void)
     ESP_LOGI(TAG, "[APP] Free memory: %" PRIu32 " bytes", esp_get_free_heap_size());
     ESP_LOGI(TAG, "[APP] IDF version: %s", esp_get_idf_version());
 
-    esp_log_level_set("*", ESP_LOG_INFO);
-    esp_log_level_set("sdcard", ESP_LOG_VERBOSE);
-    esp_log_level_set("speaker", ESP_LOG_VERBOSE);
-    esp_log_level_set("mqtt-fridge", ESP_LOG_VERBOSE);
-
     ESP_ERROR_CHECK(nvs_flash_init());
     ESP_ERROR_CHECK(esp_netif_init());
     ESP_ERROR_CHECK(esp_event_loop_create_default());
