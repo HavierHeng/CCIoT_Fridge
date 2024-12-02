@@ -92,6 +92,10 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_
     int msg_id;
     switch ((esp_mqtt_event_id_t)event_id) {
     case MQTT_EVENT_CONNECTED:
+        /* TODO:
+         * espfridge/signedurl - handleSignedUrl - If there is a queue to pull in a xTaskQueue - then pull 
+         * espfridge/tts - handleAudioDisplay - Displays text and audio - define a AudioTextMessage type for a xTaskQueue
+        */
         ESP_LOGI(TAG, "MQTT_EVENT_CONNECTED");
         msg_id = esp_mqtt_client_subscribe(client, MQTT_AUDIO_SIGNED_URL_TOPIC_CLIENT, 1);
         ESP_LOGI(TAG, "sent subscribe successful, msg_id=%d", msg_id);
@@ -116,6 +120,19 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_
         ESP_LOGI(TAG, "MQTT_EVENT_UNSUBSCRIBED, msg_id=%d", event->msg_id);
         break;
     case MQTT_EVENT_PUBLISHED:
+        // This is for debug - to just check ESP managed to pub to the endpoint
+        /* TODO 
+         * Publishes
+         *
+         * For STOCKING:
+         * espfridge/trigger/audio/item
+         * espfridge/trigger/audio/expiry
+         * espfridge/additem
+         *
+         * FOR CONSUMPTION:
+         * espfridge/consume
+        */ 
+
         ESP_LOGI(TAG, "MQTT_EVENT_PUBLISHED, msg_id=%d", event->msg_id);
         break;
     case MQTT_EVENT_DATA:

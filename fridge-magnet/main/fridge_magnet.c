@@ -21,6 +21,22 @@
 
 static const char *TAG = "fridge-app";
 
+enum fridge_states {
+    CONSUMPTION,
+    STOCKING
+};
+
+enum consumption_substate {
+    ITEM_DETAIL,
+    EXPIRY_DETAIL,
+    WEIGHT_DETAIL
+};
+
+esp_err_t handle_item_detail(void);
+esp_err_t handle_expiry_detail(void);
+esp_err_t handle_weight_detail(void);
+
+
 void app_main(void)
 {
     ESP_LOGI(TAG, "[APP] Startup..");
