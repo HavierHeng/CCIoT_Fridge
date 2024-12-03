@@ -3,6 +3,7 @@
 #include "driver/i2s_types.h"
 #include "file_operations.h"
 #include "driver/i2s_std.h"
+#include "driver/gpio.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/idf_additions.h"
 #include "hal/i2s_types.h"
@@ -18,13 +19,14 @@
 #define PLAY_BUFFER_2 MOUNT_POINT "/playback_2.wav"
 
 // For testing mic
-#define MIC_SAMPLE_RATE 44100  // Sample rate
-#define MIC_NUM_CHANNELS 1  // 1 for mono, 2 for stereo
-#define MIC_BITS_PER_SAMPLE 16  // Actually needa convert this to I2S values
+#define MIC_SAMPLE_RATE 16000  // Sample rate
+#define MIC_NUM_CHANNELS I2S_SLOT_MODE_STEREO  // 1 for mono, 2 for stereo
+#define MIC_BITS_PER_SAMPLE I2S_DATA_BIT_WIDTH_32BIT  
 #define RECORD_DURATION 5       // Record for 5 seconds
-#define MAX_BYTES_TO_RECORD (RECORD_DURATION * MIC_SAMPLE_RATE * sizeof(int16_t))
+#define MAX_BYTES_TO_RECORD (RECORD_DURATION * MIC_SAMPLE_RATE * MIC_BITS_PER_SAMPLE)
 
 // Double buffering - when one is written to, the other is being sent by HTTP PUT
+
 // These two are being protected by their own semaphores just in case the simultaneous write/send is performed since its done by two different tasks
 #define WAV_BUFFER_1 MOUNT_POINT "/recording_1.wav"
 #define WAV_BUFFER_2 MOUNT_POINT "/recording_2.wav"
@@ -60,7 +62,7 @@ esp_err_t init_i2s_mic() {
   ESP_ERROR_CHECK(i2s_new_channel(&chan_cfg, NULL, &rx_handle));
   i2s_std_config_t std_rx_cfg = {
       .clk_cfg = I2S_STD_CLK_DEFAULT_CONFIG(MIC_SAMPLE_RATE),
-      .slot_cfg = I2S_STD_MSB_SLOT_DEFAULT_CONFIG(MIC_BITS_PER_SAMPLE, MIC_NUM_CHANNELS),
+      .slot_cfg = I2S_STD_PHILIPS_SLOT_DEFAULT_CONFIG(MIC_BITS_PER_SAMPLE, MIC_NUM_CHANNELS),
       .gpio_cfg = {
           .mclk = I2S_GPIO_UNUSED,
           .bclk = GPIO_NUM_7,
@@ -242,7 +244,7 @@ esp_err_t save_wav_file(const char *filename) {
     ESP_ERROR_CHECK(stream_audio_to_wav(file));
 
     // Rewind the file and update the header with the correct data size
-    fseek(file, 0, SEEK_SET);  // Rewind to the start of the file
+    fseek(file, 0, SEEK_END);  // Rewind to the start of the file
     long file_size = ftell(file);  // Get the total file size
 
     // Write the correct data size in the header (calculate it after writing all data)

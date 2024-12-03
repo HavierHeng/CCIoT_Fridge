@@ -5,6 +5,7 @@
 // Meanwhile the secondary task is to play audio if there is anything in queue to be played
 
 #include "esp_err.h"
+#include "file_operations.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/idf_additions.h"
 #include "freertos/projdefs.h"
@@ -62,10 +63,14 @@ void record_audio_task(void *pvParameters) {
             if (get_recordTo(&recordTo) == ESP_FAIL) {
                 continue;
             }
-            uploadMsg_t uploadMsg;
-
+            uint32_t timestamp = esp_log_timestamp();
+            char filename[64];
+            snprintf(filename, sizeof(filename), "%s/%lu.wav", MOUNT_POINT, (unsigned long)timestamp);
+            save_wav_file(filename);
+            // uploadMsg_t uploadMsg;
+            /*
             if (recordTo) {
-                if (xSemaphoreTake(record_buf_semaphore_1, (TickType_t) 10) == pdTRUE) {
+                if (xSemaphoreTake(record_buf_semaphore_1, (TickType_t) 0) == pdTRUE) {
                     save_wav_file(WAV_BUFFER_1);
                     snprintf(uploadMsg.filePath, sizeof(uploadMsg.filePath), WAV_BUFFER_1);
                     if (xQueueSend(xUploadQueue, (void *) &uploadMsg, (TickType_t) 0) != pdPASS) {
@@ -75,7 +80,7 @@ void record_audio_task(void *pvParameters) {
                     toggle_recordTo();
                 } 
             } else {
-                if (xSemaphoreTake(record_buf_semaphore_2, (TickType_t) 10) == pdTRUE) {
+                if (xSemaphoreTake(record_buf_semaphore_2, (TickType_t) 0) == pdTRUE) {
                     save_wav_file(WAV_BUFFER_2);
                     snprintf(uploadMsg.filePath, sizeof(uploadMsg.filePath), WAV_BUFFER_2);
                     if (xQueueSend(xUploadQueue, (void *) &uploadMsg, (TickType_t) 0) != pdPASS) {
@@ -85,16 +90,19 @@ void record_audio_task(void *pvParameters) {
                     toggle_recordTo();
                 }
             }
+            */
         }
     }
 }
 
 // Handles uploading of audio from SD Card via HTTP PUT to S3 Bucket
+// Uploading takes so long its actually stupid
 void upload_audio_task(void *pvParameters) {
     uploadMsg_t uploadMsg;
     while (1) {
         if (xQueueReceive(xUploadQueue, &uploadMsg, portMAX_DELAY) == pdPASS) {
             // Perform HTTP PUT, but to what file? I think I should increment but by right the signed URL is the one who decides the path
+            ESP_LOGI("upload", "UPLOADING %s", uploadMsg.filePath);
             if (strcmp(uploadMsg.filePath, WAV_BUFFER_1) == 0) {
                 if (xSemaphoreTake(record_buf_semaphore_1, (TickType_t) 0) == pdTRUE) {
                     upload_file_from_sd(UPLOAD_URL, uploadMsg.filePath);
@@ -130,6 +138,7 @@ esp_err_t init_tasks() {
                 NULL,
                 2 | portPRIVILEGE_BIT,
                 NULL);
+    /*
     xTaskCreatePinnedToCore(upload_audio_task,
                 "Upload",
                 5000,
@@ -137,6 +146,7 @@ esp_err_t init_tasks() {
                 1 | portPRIVILEGE_BIT,
                 NULL,
                 1);
+    */
 
     return ESP_OK;
 }

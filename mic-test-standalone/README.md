@@ -16,8 +16,11 @@ The key things being tested here are
     - The file that is being recorded to is the not one being uploaded at any point. 
     - This way I can continuously record nonstop
 
+# Lessons learnt
 Remember to close file handles
 Ordering of task priority matters - else some tasks will never have the chance to do things.
+Stereo everything even if I record in mono - mono affects how data is output on buffer when `i2s_channel_read` is called.
+INMP441 only works with 32 bit depth, indeed like the spec sheet mentioned whereby it has to use 64 BCLK in 1 frame, so 32 bit depth x 2 slots does work fine.
 
 ## Components to menuconfig
 Configure screen pinout
