@@ -19,11 +19,11 @@
 #define PLAY_BUFFER_2 MOUNT_POINT "/playback_2.wav"
 
 // For testing mic
-#define MIC_SAMPLE_RATE 16000  // Sample rate
-#define MIC_NUM_CHANNELS I2S_SLOT_MODE_STEREO  // 1 for mono, 2 for stereo
-#define MIC_BITS_PER_SAMPLE I2S_DATA_BIT_WIDTH_32BIT  
+#define MIC_SAMPLE_RATE 16000  // Sample rate can be 16000, 22050, 41000
+#define MIC_NUM_CHANNELS I2S_SLOT_MODE_STEREO  // Only stereo works (due to some byte swapping thing with mono)
+#define MIC_BITS_PER_SAMPLE I2S_DATA_BIT_WIDTH_32BIT  // Has to be 32 bit depth for 64 BCLK as per INMP441 specs
 #define RECORD_DURATION 5       // Record for 5 seconds
-#define MAX_BYTES_TO_RECORD (RECORD_DURATION * MIC_SAMPLE_RATE * MIC_BITS_PER_SAMPLE)
+#define MAX_BYTES_TO_RECORD (RECORD_DURATION * MIC_SAMPLE_RATE * MIC_NUM_CHANNELS * MIC_BITS_PER_SAMPLE / 8)
 
 // Double buffering - when one is written to, the other is being sent by HTTP PUT
 
@@ -116,7 +116,7 @@ esp_err_t play_wav(char* fp) {
 }
 
 esp_err_t stream_audio_to_wav(FILE *file) {
-    int16_t *buf = calloc(AUDIO_BUFFER, sizeof(int16_t));
+    int32_t *buf = calloc(AUDIO_BUFFER, sizeof(int32_t));
     if (buf == NULL) {
         ESP_LOGE(TAG, "Failed to allocate memory for buffer.");
         return ESP_ERR_NO_MEM;
@@ -145,7 +145,7 @@ esp_err_t stream_audio_to_wav(FILE *file) {
         }
 
         // Read audio data from the I2S channel
-        esp_err_t ret = i2s_channel_read(rx_handle, buf, AUDIO_BUFFER * sizeof(int16_t), &bytes_read, portMAX_DELAY);
+        esp_err_t ret = i2s_channel_read(rx_handle, buf, AUDIO_BUFFER * sizeof(int32_t), &bytes_read, portMAX_DELAY);
         if (ret != ESP_OK) {
             ESP_LOGE(TAG, "I2S read failed: %d", ret);
             break;

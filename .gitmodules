@@ -10,3 +10,6 @@
 [submodule "mic-test-standalone/components/esp32-HD44780"]
 	path = mic-test-standalone/components/esp32-HD44780
 	url = git@github.com:bradkeifer/esp32-HD44780.git
+[submodule "s3-bucket-upload-download-test/components/esp32-HD44780"]
+	path = s3-bucket-upload-download-test/components/esp32-HD44780
+	url = git@github.com:bradkeifer/esp32-HD44780.git

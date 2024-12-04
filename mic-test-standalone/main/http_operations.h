@@ -9,7 +9,8 @@
 
 #define MAX_HTTP_RECV_BUFFER 1024 
 #define MAX_HTTP_OUTPUT_BUFFER 2048
-#define UPLOAD_URL "http://10.0.0.90:8080/upload.wav"
+
+static const char *TAG = "HTTP_CLIENT";
 
 
 // Structure to maintain state across callbacks
@@ -22,7 +23,6 @@ typedef struct {
 
 esp_err_t http_event_handler(esp_http_client_event_t *evt) {
     // Get our state structure from user_data
-    const char *TAG = "HTTP_CLIENT";
     download_state_t* state = (download_state_t*)evt->user_data;
     
     switch(evt->event_id) {
@@ -72,7 +72,6 @@ esp_err_t http_event_handler(esp_http_client_event_t *evt) {
 
 esp_err_t download_file_to_sd(const char* url, const char* file_path) {
     // Initialize our state
-    const char *TAG = "HTTP_CLIENT";
     download_state_t state = {
         .file = fopen(file_path, "wb"),
         .total_bytes = 0,
@@ -102,8 +101,6 @@ esp_err_t download_file_to_sd(const char* url, const char* file_path) {
 
 esp_err_t upload_file_from_sd(const char* url, const char* file_path) {
     // Open the file
-    const char *TAG = "HTTP_CLIENT";
-
     FILE* f = fopen(file_path, "rb");
     if (f == NULL) {
         ESP_LOGE(TAG, "Failed to open file for reading");

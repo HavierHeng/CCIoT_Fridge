@@ -9,6 +9,14 @@ Get ESP-IDF v5.2, and activate the IDF environment.
 
 Be careful to not plug the ESP32 in while the speaker amplifier is connected, just in case it draws current from your USB port.
 
+# Menuconfig
+
+Things to configure in menuconfig
+- FATFS - Enable Long file names
+- LCD - Change the pins to the relevant details below, SDA 1, SCL 2, Address 0x27, Row 2, Col 16
+- Example SD Card - Change Pinouts, set to 1 Line mode
+
+
 # Firmware and Pinouts
 
 ## GPIO Button
