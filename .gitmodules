@@ -16,3 +16,6 @@
 [submodule "pi-fridge-magnet/python_lcd"]
 	path = pi-fridge-magnet/python_lcd
 	url = git@github.com:dhylands/python_lcd.git
+[submodule "esp32-fridge-magnet/fridge-magnet/components/esp32-HD44780"]
+	path = esp32-fridge-magnet/fridge-magnet/components/esp32-HD44780
+	url = git@github.com:bradkeifer/esp32-HD44780.git

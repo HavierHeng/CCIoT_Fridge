@@ -1,0 +1,13 @@
+menu "SD Card Configuration"
+    config SPKR_AUDIO_FILE 
+        string "File to read from"
+        default "/test.wav"
+        help
+            Sets the file to read from. File has to be strictly bit depth of 16 bits, PCM, 44100Hz sample rate.
+    config SPKR_BUFFER_SIZE
+        int "Size of audio buffer"
+        default 2048
+        help
+            Number of bytes to reserve for i2s audio buffer in heap.
+endmenu
+

@@ -1,0 +1,62 @@
+menu "Fridge MQTT Configuration"
+
+    config MQTT_CLIENT_IDENTIFIER
+        string "The MQTT client identifier used"
+        default "espfridge"
+        help
+            The MQTT client identifier used in this example. Each client identifier must be unique.
+            so edit as required to ensure that no two clients connecting to the same broker use the same client identifier.
+            Will be prepended to topic.
+
+    config MQTT_BROKER_ENDPOINT
+        string "Endpoint of the MQTT broker to connect to"
+        default "a1il69uezpqouq-ats.iot.ap-southeast-1.amazonaws.com"
+        help
+            This example can be run with any MQTT broker, that supports server authentication.
+            For testing generic MQTT, can use test.mosquitto.org
+
+    config MQTT_BROKER_PORT
+        int "Port of the MQTT broker use"
+        default 8883
+        help
+            In general, port 8883 is for secured MQTT connections.
+            Port 443 requires use of the ALPN TLS extension with the ALPN protocol name.
+            When using port 8883, ALPN is not required.
+
+    config MQTT_AUDIO_TRIGGER_TOPIC
+        string "Topic to trigger signed URL to upload audio files from microphone"
+        default "/trigger/audio"
+        help
+            This topic is used to request a URL to upload audio files from microphone to, by publishing any message. 
+
+    config MQTT_AUDIO_SIGNED_URL_TOPIC
+        string "Topic to receive signed URL to upload audio files from microphone"
+        default "/sub/signedurl"
+        help
+            This same topic is also subscribed to by the fridge magnet to get a signed URL to PUT .wav files to.
+
+    config MQTT_TTS_AUDIO_SUB_TOPIC
+        string "Topic to receive signed URL for downloading TTS audio files"
+        default "/pub/tts"
+        help
+            Topic is subscribed to receive to a signed URL for downloading generated audio files by the text to speech containing what is wanted to play to the user.
+
+    config MQTT_STT_SUB_TOPIC
+        string "Topic to receive detected speech to text from user as raw text"
+        default "/pub/stt"
+        help
+            Topic is subscribed to receive detected speech from user in text. This is then used to display to the 16x2 LCD screen.
+
+    config HARDWARE_PLATFORM_NAME
+        string "The hardware platform"
+        default "ESP32"
+        help
+            The name of the hardware platform the application is running on.
+
+    config MQTT_NETWORK_BUFFER_SIZE
+        int "Size of the network buffer for MQTT packets"
+        range 1024 2048
+        default 1024
+        help
+            Size of the network buffer for MQTT packets.
+endmenu

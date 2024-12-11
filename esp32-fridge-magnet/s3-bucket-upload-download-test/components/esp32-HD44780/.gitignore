@@ -1,0 +1,14 @@
+*.DS_Store
+.vscode
+**/build
+**/sdkconfig
+**/sdkconfig.old
+*.new
+
+# Sphinx documentation
+docs/_build/
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
