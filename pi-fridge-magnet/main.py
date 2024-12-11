@@ -151,7 +151,10 @@ async def main_event_loop():
     mqttc = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
     mqttc.tls_set(ca_certs="certs/root_cert_auth.crt", certfile="certs/client.crt", keyfile="certs/client.key")
     mqttc.on_connect = on_connect
-    mqttc.message_callback_add("espfridge/tts", )
+    mqttc.message_callback_add("espfridge/tts", tts_on_message)
+    mqttc.message_callback_add("espfridge/signedurl", url_on_message)
+    mqttc.message_callback_add("espfridge/weight", weight_on_message)
+
     mqttc.user_data_set(queue_handler)  # Pass queues in for callback to use
     mqttc.connect("a1il69uezpqouq-ats.iot.ap-southeast-1.amazonaws.com", 8883, 60)
     mqttc.loop_start()  # Runs in another thread, non-blocking
