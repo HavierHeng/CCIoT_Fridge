@@ -2,31 +2,19 @@ import paho.mqtt.client as mqtt
 import asyncio
 import json
 from .states.consumption_state import ConsumptionState
-from .states.stocking_state import StockingState
-# from .button.button import GpioListener
+from .button.button import GpioListener
+from awshttp.s3_operations import upload_file
+from .queues.queue_handler import QueueHandler
+from .audio.audio_handler import AudioHandler
+from lcd.i2c_lcd import I2cLcd
 
 # Get main event loop in main thread
 loop = asyncio.get_event_loop()
 
-class QueueHandler:
-    """
-    Bundle up the shit ton of queues synchronizing each task. e.g for callbacks or state machine execution that needs all of them.
-    """
-    def __init__(self, audio_queue, lcd_queue, mqtt_queue, upload_queue, weight_queue, event_queue):
-        # Holds audio URLs for downloading and playback
-        self.audio_queue = audio_queue
-        # Holds text for displaying on the LCD
-        self.lcd_queue = lcd_queue
-        # Holds MQTT Messages to be published
-        self.mqtt_queue = mqtt_queue
-        # Holds uploading URLs for uploading recordings
-        self.upload_queue = upload_queue
-        # Holds weight from load cell
-        self.weight_queue = weight_queue
-        # Holds state events triggered by anything for state transitions
-        self.event_queue = event_queue
-
 def on_connect(client, userdata, flags, reason_code, properties):
+    """
+    Callback for generic MQTT connect event.
+    """
     print(f"Connected with result code {reason_code}")
 
 def tts_on_message(client, userdata, msg):
@@ -41,17 +29,10 @@ def tts_on_message(client, userdata, msg):
     queue_handler = userdata 
     try:
         payload = json.loads(msg.payload.decode())
-        # Process tts messages from espfridge/tts
-        signed_url = payload.get("audio", None)
-        text = payload.get("text", None)
-        if signed_url:
-            # Enqueue events for audio download 
-            asyncio.run_coroutine_threadsafe(queue_handler.audio_queue.put(signed_url), loop)
-        if text:
-            # Enqueue LCD to display text 
-            asyncio.run_coroutine_threadsafe(queue_handler.lcd_queue.put(text), loop)
+        asyncio.run_coroutine_threadsafe(queue_handler.mqtt_queue.put(payload), loop)
     except Exception as e:
         print(f"Error processing message: {e}")
+
 
 def weight_on_message(client, userdata, msg):
     """
@@ -62,9 +43,8 @@ def weight_on_message(client, userdata, msg):
     queue_handler = userdata
     try:
         payload = float(msg.payload.decode())
-        # Process weight messages
+        # Process weight messages - This is handled in state
         asyncio.run_coroutine_threadsafe(queue_handler.weight_queue.put(payload), loop)
-        asyncio.run_coroutine_threadsafe(queue_handler.event_queue.put("weight_updated"), loop)
     except Exception as e:
         print(f"Error processing message: {e}")
 
@@ -84,38 +64,29 @@ def url_on_message(client, userdata, msg):
     try:
         payload = msg.payload.decode()
         # Process audio upload path 
+        asyncio.run_coroutine_threadsafe(queue_handler.url_queue.put(payload), loop)
     except Exception as e:
         print(f"Error processing message: {e}")
 
-async def handle_mqtt_event(mqtt_queue, mqtt_client):
-    """
-    Handle MQTT publish events
-    """
-    signed_url = await mqtt_queue.get()
 
-async def handle_download_playback(audio_queue):
+async def upload_task(upload_queue):
     """
-    Handle download followed by audio playback events from audio_queue
-    """
-    audio_url = await audio_queue.get()
+    Handle audio uploading to S3 bucket. Runs as a permanent task in the background to wait for stuff to upload.
 
-async def handle_update_lcd(lcd_queue):
+    Upload queue jobs come as a dictionary in the following format:
+    {
+        "file_path": <recording to upload>,
+        "signed_url": {
+            "protocol": <http | https>,
+            "hostname": <hostname e.g "fridge-bucket-a8e757a7-74fc-48fd-9391-ee3bd3ebf30e.s3.amazonaws.com">,
+            "path": <path to upload to e.g "/audio/item/31724ac7-5870-464a-ad1a-7ef7cff59f39.wav">,
+            "query": <urlencoded query key and values> 
+        }
+    }
     """
-    Handle LCD display events from LCD Queue
-    """
-    # TODO: LCD Library is blocking - run in to_thread
-    # TODO: Remember to task_done()
-    try:
-        # TODO: Handle LCD in another thread
-    except asyncio.CancelledError:
-        print("Cancelling LCD task")
-
-
-async def handle_upload_recording(upload_queue):
-    """
-    Handle audio recording and uploading to S3 bucket
-    """
-    upload_url = await upload_queue.get()
+    while True:
+        upload_job = await upload_queue.get()
+        await upload_file(**upload_job["signed_url"], file_path=upload_job["file_path"])
 
 async def cancel_tasks(tasks):
     """
@@ -155,20 +126,16 @@ async def handle_long_button_press(button_event, event_queue, tasks):
     button_event.clear()
 
 async def main_event_loop():
-    # State machine setup
-    state = ConsumptionState()
-
     # Queues required for concurrency
-    # Holds MQTT Messages to be published
+    # Holds incoming MQTT messages into its own queue
     mqtt_queue = asyncio.Queue()
-    # Holds audio URLs for downloading and playback
-    audio_queue = asyncio.Queue()
-    # Holds text for displaying on the LCD
-    lcd_queue = asyncio.Queue()
-    # Holds uploading URLs for uploading recordings
-    upload_queue = asyncio.Queue()
-    # Holds weight from MQTT
+    # Holds signed URLs from MQTT for uploading recordings
+    url_queue = asyncio.Queue() 
+    # Holds weight updates from load module from MQTT
     weight_queue = asyncio.Queue()
+
+    # Holds uploading jobs for uploading recordings  - Jobs include a file path and a upload url
+    upload_queue = asyncio.Queue()
     # Holds state events triggered by anything for state transitions
     event_queue = asyncio.Queue()
 
@@ -176,8 +143,10 @@ async def main_event_loop():
     short_button_event = asyncio.Event() 
     long_button_event = asyncio.Event()
 
-    queue_handler = QueueHandler(audio_queue, lcd_queue, mqtt_queue, upload_queue, weight_queue, event_queue)
-       
+    queue_handler = QueueHandler(mqtt_queue=mqtt_queue, url_queue=url_queue, upload_queue=upload_queue, weight_queue=weight_queue, event_queue=event_queue)
+
+    audio_handler = AudioHandler()
+
     # MQTT Client setup 
     mqttc = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
     mqttc.tls_set(ca_certs="certs/root_cert_auth.crt", certfile="certs/client.crt", keyfile="certs/client.key")
@@ -188,20 +157,24 @@ async def main_event_loop():
     mqttc.loop_start()  # Runs in another thread, non-blocking
 
     # GPIO Button Listener 
-    # button_listener = GpioListener(button_pin=17, short_button_event=short_button_event, long_button_event=long_button_event)
+    button_listener = GpioListener(button_pin=17, short_button_event=short_button_event, long_button_event=long_button_event)
 
-    # TODO: Init I2C screen add to update_lcd
+    # Initialize 2x16 LCD Screen with PCF8574 backpack on I2C address 0x27
+    # On 40-pin Pi, Port 1 (I2C 1) is GPIO 2 and 3
+    lcd_handle = I2cLcd(1, 0x27, 2, 16)
 
-    # Keep main event loop alive
+    # State machine setup
+    state = ConsumptionState(mqtt_client=mqttc, lcd_handle = lcd_handle, queue_handler=queue_handler, audio_handler=audio_handler)
+
+    # Init upload tasks - in case there are simultaneous recordings that are queued/backed up
+    UPLOAD_TASKS = 1
+    upload_tasks = [asyncio.create_task(upload_task(upload_queue)) for _ in range(UPLOAD_TASKS)]
+
+    # Main event loop
     while True:
         # Perform all concurrent tasks together
         tasks = []
-        tasks.append(asyncio.create_task(handle_mqtt_event(mqtt_queue, mqttc)))
-        tasks.append(asyncio.create_task(handle_download_playback(audio_queue)))
-        tasks.append(asyncio.create_task(handle_update_lcd(lcd_queue)))
-        tasks.append(asyncio.create_task(handle_upload_recording(upload_queue)))
-
-        # Execute state actions concurrently as well
+        # Execute state actions concurrently 
         tasks.append(asyncio.create_task(state.execute()))
 
         # Start button tasks to wait on button presses if any
@@ -210,7 +183,7 @@ async def main_event_loop():
         button_tasks.append(asyncio.create_task(handle_long_button_press(long_button_event, event_queue, tasks)))
 
         # Everything that should be done concurrently
-        # All tasks should reach the end of their execution
+        # All tasks should reach the end of their execution before state changes
         if tasks:
             await asyncio.gather(*tasks)
 

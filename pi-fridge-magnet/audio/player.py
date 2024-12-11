@@ -57,16 +57,14 @@ class PlayingFile(object):
         self._stream.start_stream()
         return self
 
-    def stop_recording(self):
-        self._stream.stop_stream()
-        return self
+    def is_active(self):
+        return self._stream.is_active()
 
     def get_callback(self):
         def callback(in_data, frame_count, time_info, status):
             self.wavefile.readframes(in_data)
             return in_data, pyaudio.paContinue
         return callback
-
 
     def close(self):
         self._stream.close()

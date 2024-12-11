@@ -4,6 +4,24 @@ import aiofiles
 import xml.etree.ElementTree as ET
 import os
 import argparse
+from urllib.parse import urlparse
+
+def parse_signed_url(signed_url):
+    """
+    Parses the signed URL to a format that follows what lambda sends
+    {
+        "protocol": <http | https>,
+        "hostname": <hostname e.g "fridge-bucket-a8e757a7-74fc-48fd-9391-ee3bd3ebf30e.s3.amazonaws.com">,
+        "path": <path to upload to e.g "/audio/item/31724ac7-5870-464a-ad1a-7ef7cff59f39.wav">,
+        "query": <urlencoded query key and values> 
+    }
+
+    """
+    parsed = urlparse(signed_url)
+    return {"protocol": parsed.scheme,
+            "hostname": parsed.hostname,
+            "path": parsed.path,
+            "query": parsed.query}
 
 async def download_file(protocol, hostname, path, file_path, chunk_size=64*1024):
     """
