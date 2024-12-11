@@ -172,24 +172,30 @@ void loop()
 
   // Remember to calibrate before hand
   if (scale.is_ready()) {
-    currentTime = millis(); // Get the current time
+    currentTime = millis();  // Get the current time
 
     // Get a new reading from the scale
     long currentReading = scale.get_units(10);
 
     // Store the current reading in the array (circular buffer logic)
     readings[readIndex] = currentReading;
-    readIndex = (readIndex + 1) % NUM_READINGS;  // Update the index, wrap around if necessary
+    readIndex = (readIndex + 1) % STABILIZATION_PERIOD;  
 
-    // Check if enough time has passed (5 seconds)
-    if (currentTime - lastMeasurementTime >= 1000) {  // Every second, check stability
+    if (currentTime - lastMeasurementTime >= 1000) {  
       lastMeasurementTime = currentTime;
 
-      // Check if all the readings in the array are stable
+      // Check if the weight is significantly different from 0 (tared value)
+      if (abs(currentReading) < SIGNIFICANT_WEIGHT) {
+        // If the weight is too close to zero, don't publish
+        Serial.println("Weight too small, not publishing.");
+        return;
+      }
+
+      // Check if all the readings in the array are stable within threshold 
       bool isStable = true;
       long firstReading = readings[readIndex];  // The first reading to compare against
 
-      for (int i = 0; i < NUM_READINGS; i++) {
+      for (int i = 0; i < STABILIZATION_PERIOD; i++) {
         // Check the difference between the current reading and the first reading
         if (abs(readings[i] - firstReading) > STABILITY_THRESHOLD) {
           isStable = false;
@@ -197,9 +203,8 @@ void loop()
         }
       }
 
-      // If stable, publish data
+      // If stable and significant, publish data
       if (isStable) {
-        // Prepare payload and publish
         client.publish(publishTopic, publishPayload);
         printf("Publish [%s] %s\r\n", publishTopic, publishPayload);
 
@@ -213,5 +218,5 @@ void loop()
     Serial.println("HX711 not found.");
   }
 
-  client.loop(); // Keep the client alive
+  client.loop(); 
 }
