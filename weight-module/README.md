@@ -1,7 +1,7 @@
 # Weight module code
 ## Description
 
-The weight module is just a weighing scale with MQTT. It simply publishes its weight difference if there is a significant difference in the weight from tared value and this difference is stable for 5 seconds.
+The weight module is just a weighing scale with MQTT. It simply publishes its weight difference if there is a significant difference in the weight from tared value and this difference is stable for 5 seconds. The certificates are placeholders for the real Thing key pairs and root CA from AWS.
 
 ## Design
 
@@ -22,3 +22,4 @@ HX711 pinouts are
 | DT | 16 |
 
 The load cells used are half-bridge GML670 load cells in a wheatstone bridge configuration. 
+
